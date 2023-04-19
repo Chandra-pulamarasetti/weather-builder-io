@@ -14,8 +14,17 @@ import Image from "next/image";
 import { useState } from "react";
 import { apiKey } from "@/uitils";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { useRouter } from "next/router";
 
 export default function Forecast(props) {
+  const [currentDate, setCurrentDate] = useState(0);
+  const router = useRouter();
+
+  if (props.error) {
+    router.push("/not-found");
+    return null;
+  }
+
   const {
     city: { name },
     list,
@@ -30,8 +39,6 @@ export default function Forecast(props) {
     }
     return accum;
   }, {});
-
-  const [currentDate, setCurrentDate] = useState(0);
 
   return (
     <Container maxWidth="xl" sx={{ paddingTop: "16px" }}>
@@ -153,6 +160,7 @@ export default function Forecast(props) {
                             width={100}
                             height={100}
                             src={`https://openweathermap.org/img/w/${icon}.png`}
+                            alt={main}
                           />
                         </Card>
                       </Box>
@@ -184,7 +192,7 @@ export async function getServerSideProps(context) {
   } catch (error) {
     return {
       props: {
-        error: error ? error.message : {},
+        error: error ? error.message : "Something Went Wrong",
       },
     };
   }
